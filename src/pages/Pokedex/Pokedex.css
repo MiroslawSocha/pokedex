@@ -232,3 +232,21 @@ a:hover{
   background-color: pink;
   color: black;
 }
+
+@media (min-width: 576px) {
+  .pokemon-img {
+    max-width: 120px;
+  }
+}
+
+@media (min-width: 768px) {
+  .pokemon-img {
+    max-width: 140px;
+  }
+}
+
+@media (min-width: 992px) {
+  .pokemon-img {
+    max-width: 160px;
+  }
+}

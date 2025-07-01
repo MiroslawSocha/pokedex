@@ -31,6 +31,17 @@ function Pokedex() {
     );
   };
 
+  const filteredPokemons = pokemons.filter((pokemon) => {
+    return (
+      pokemon.region.toLowerCase() === region.toLowerCase() &&
+      (pokemon.pok_name.toLowerCase().includes(search) ||
+        pokemon.pok_id.includes(search) ||
+        pokemon.type1.includes(search) ||
+        pokemon.type2.includes(search) ||
+        typeCombination(pokemon.type1, pokemon.type2, search))
+    );
+  });
+
   useEffect(() => {
     const info = document.getElementById("info-icon");
     const tooltip = document.getElementById("tooltip-box");
@@ -109,18 +120,8 @@ function Pokedex() {
       <h2 className="region-name text-center">{region || "Pokedex"}</h2>
       <div className="container px-3">
         <div className=" row">
-          {pokemons
-            .filter((pokemon) => {
-              return (
-                pokemon.region.toLowerCase() === region.toLowerCase() &&
-                (pokemon.pok_name.toLowerCase().includes(search) ||
-                  pokemon.pok_id.includes(search) ||
-                  pokemon.type1.includes(search) ||
-                  pokemon.type2.includes(search) ||
-                  typeCombination(pokemon.type1, pokemon.type2, search))
-              );
-            })
-            .map((pokemon) => (
+          {filteredPokemons.length > 0 ? (
+            filteredPokemons.map((pokemon) => (
               <div
                 className="col-6 col-sm-4 col-md-3 col-lg-2 d-flex justify-content-center"
                 key={pokemon.pok_id}
@@ -128,7 +129,11 @@ function Pokedex() {
                 <div className="pokemon">
                   <Link to={`/pokemon/${pokemon.pok_id}`}>
                     <h4 className="id">#{pokemon.pok_id}</h4>
-                    <img src={pokemon.image} alt={pokemon.pok_name} />
+                    <img
+                      src={pokemon.image}
+                      alt={pokemon.pok_name}
+                      className="img-fluid pokemon-img"
+                    />
                     <h2>{pokemon.pok_name}</h2>
                     <div className="type-pokemon">
                       <p className={pokemon.type1}>{pokemon.type1}</p>
@@ -139,7 +144,12 @@ function Pokedex() {
                   </Link>
                 </div>
               </div>
-            ))}
+            ))
+          ) : (
+            <h3 className="text-center mt-4">
+              No Pokémon found in this region with that search.
+            </h3>
+          )}
         </div>
       </div>
     </div>

@@ -5,6 +5,12 @@
   background-color: burlywood !important;
 }
 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: content-box !important;
+}
+
 body{
   background-color: burlywood;
   min-width: 640px;
