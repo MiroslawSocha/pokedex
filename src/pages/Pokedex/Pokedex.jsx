@@ -119,22 +119,30 @@ function Pokedex() {
 
       <h2 className="region-name text-center">{region || "Pokedex"}</h2>
       <div className="container px-3">
-        <div className=" row">
+        <div className="row justify-content-center">
           {filteredPokemons.length > 0 ? (
             filteredPokemons.map((pokemon) => (
               <div
-                className="col-6 col-sm-4 col-md-3 col-lg-2 d-flex justify-content-center"
+                className="col-6 col-sm-4 col-md-3 col-lg-2 d-flex align-items-stretch mb-4"
                 key={pokemon.pok_id}
               >
-                <div className="pokemon">
+                <div className="pokemon shadow-sm rounded-4 text-center p-3">
                   <Link to={`/pokemon/${pokemon.pok_id}`}>
                     <h4 className="id">#{pokemon.pok_id}</h4>
-                    <img src={pokemon.image} alt={pokemon.pok_name} />
-                    <h2>{pokemon.pok_name}</h2>
-                    <div className="type-pokemon">
-                      <p className={pokemon.type1}>{pokemon.type1}</p>
+                    <img
+                      src={pokemon.image}
+                      alt={pokemon.pok_name}
+                      className="img-fluid mb-2"
+                    />
+                    <h2 className="h3">{pokemon.pok_name}</h2>
+                    <div className="type-pokemon d-flex justify-content-center gap-2">
+                      <p className={`badge ${pokemon.type1}`}>
+                        {pokemon.type1}
+                      </p>
                       {pokemon.type2 && (
-                        <p className={pokemon.type2}>{pokemon.type2}</p>
+                        <p className={`badge ${pokemon.type2}`}>
+                          {pokemon.type2}
+                        </p>
                       )}
                     </div>
                   </Link>
@@ -142,9 +150,11 @@ function Pokedex() {
               </div>
             ))
           ) : (
-            <h3 className="text-center mt-4">
-              No Pokémon found in this region with that search.
-            </h3>
+            <div className="col-12">
+              <h3 className="text-center mt-4">
+                No Pokémon found in this region with that search.
+              </h3>
+            </div>
           )}
         </div>
       </div>
