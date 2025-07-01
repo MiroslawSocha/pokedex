@@ -8,57 +8,69 @@ function Pokemon() {
 
   if (!pokemon) {
     return (
-      <div className="pokemon-not-found">
+      <div className="pokemon-not-found container text-center mt-5">
         <h2>Pokemon not found</h2>
-        <Link to="/">← Back to Pokedex</Link>
+        <Link to="/" className="btn btn-primary mt-3">
+          ← Back to Pokedex
+        </Link>
       </div>
     );
   }
 
   return (
-    <div className="pokemon-details">
-      <Link to="/" className="back-link">
-        <p>← Back to Pokedex</p>
+    <div className="container pokemon-details py-4">
+      <Link to="/" className="back-link mb-3">
+        ← Back to Pokedex
       </Link>
-      <h1 className="pokemon-name">
-        #{pokemon.pok_id} {pokemon.pok_name}
-      </h1>
-      <img
-        className="pokemon-image"
-        src={pokemon.image}
-        alt={pokemon.pok_name}
-      />
-      <div className="pokemon-info">
-        <p>
-          <strong>Region:</strong> {pokemon.region}
-        </p>
-        <p>
-          <strong>Types:</strong>
-          <span className={`type-badge ${pokemon.type1}`}>{pokemon.type1}</span>
-          {pokemon.type2 && (
-            <span className={`type-badge ${pokemon.type2}`}>
-              {pokemon.type2}
-            </span>
-          )}
-        </p>
-        <p>
-          <strong>Abilities:</strong>
-        </p>
-        <div className="abilities-list">
-          {pokemon.abilities1 && <p>1. {pokemon.abilities1}</p>}
-          {pokemon.abilities2 && <p>2. {pokemon.abilities2}</p>}
-          {pokemon.abilities3 && <p>3. {pokemon.abilities3}</p>}
+
+      <div className="row align-items-center">
+        <div className="col-12 col-md-5 text-center">
+          <img
+            className="pokemon-image img-fluid"
+            src={pokemon.image}
+            alt={pokemon.pok_name}
+          />
         </div>
-        <p>
+
+        <div className="col-12 col-md-7">
+          <h1 className="pokemon-name mb-3">
+            #{pokemon.pok_id} {pokemon.pok_name}
+          </h1>
+
+          <p>
+            <strong>Region:</strong> {pokemon.region}
+          </p>
+
+          <p>
+            <strong>Types:</strong>{" "}
+            <span className={`type-badge ${pokemon.type1}`}>
+              {pokemon.type1}
+            </span>
+            {pokemon.type2 && (
+              <span className={`type-badge ${pokemon.type2} ms-2`}>
+                {pokemon.type2}
+              </span>
+            )}
+          </p>
+
+          <p>
+            <strong>Abilities:</strong>
+          </p>
+          <div className="abilities-list">
+            {pokemon.abilities1 && <p>1. {pokemon.abilities1}</p>}
+            {pokemon.abilities2 && <p>2. {pokemon.abilities2}</p>}
+            {pokemon.abilities3 && <p>3. {pokemon.abilities3}</p>}
+          </div>
+
           <a
             href={`https://www.pokemon.com/us/pokedex/${pokemon.pok_name.toLowerCase()}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="external-link"
+            className="btn btn-outline-primary mt-3"
           >
             Official Pokémon Page
           </a>
-        </p>
+        </div>
       </div>
     </div>
   );
