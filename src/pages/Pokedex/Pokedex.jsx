@@ -129,11 +129,7 @@ function Pokedex() {
                 <div className="pokemon">
                   <Link to={`/pokemon/${pokemon.pok_id}`}>
                     <h4 className="id">#{pokemon.pok_id}</h4>
-                    <img
-                      src={pokemon.image}
-                      alt={pokemon.pok_name}
-                      className="img-fluid pokemon-img"
-                    />
+                    <img src={pokemon.image} alt={pokemon.pok_name} />
                     <h2>{pokemon.pok_name}</h2>
                     <div className="type-pokemon">
                       <p className={pokemon.type1}>{pokemon.type1}</p>
