@@ -23,7 +23,7 @@ function Pokemon() {
         ← Back to Pokedex
       </Link>
 
-      <div className="row align-items-center">
+      <div className="row align-items-center justify-content-center">
         <div className="col-12 col-md-5 text-center">
           <img
             className="pokemon-image img-fluid"
