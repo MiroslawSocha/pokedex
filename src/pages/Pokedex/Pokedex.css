@@ -24,6 +24,18 @@
   text-transform: uppercase;
 }
 
+.region{
+  background-color: var(--region-bg);
+  color: black;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease;
+  font-size: 1rem;
+}
+
 .region.active{
   background-color: gray;
   color: white;
