@@ -1,16 +1,43 @@
 import { useParams, Link } from "react-router-dom";
-import { pokemons } from "../../pokemon.json";
+import { supabase } from "../../../supabaseClient";
 import "./Pokemon.css";
+import { useEffect, useState } from "react";
 
 function Pokemon() {
   const { id } = useParams();
-  const pokemon = pokemons.find((p) => p.pok_id === id);
+  const [pokemon, setPokemon] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPokemon = async () => {
+      const { data, error } = await supabase
+        .from("pokemons")
+        .select("*")
+        .eq("pok_id", id)
+        .single();
+
+      if (error) {
+        console.error("Błąd:", error);
+        setPokemon(null);
+      } else {
+        setPokemon(data);
+      }
+      setLoading(false);
+    };
+
+    fetchPokemon();
+  }, [id]);
+  useEffect(() => {
+    document.title = pokemon ? `${pokemon.pok_name} | Details` : "Pokedex";
+  }, [pokemon]);
+
+  if (loading) return <div className="text-center mt-5">Ładowanie...</div>;
 
   if (!pokemon) {
     return (
       <div className="pokemon-not-found container text-center mt-5">
         <h2>Pokemon not found</h2>
-        <Link to="/" className="btn btn-primary mt-3">
+        <Link to="/" className="mt-3 fw-bold fs-5">
           ← Back to Pokedex
         </Link>
       </div>
@@ -23,7 +50,7 @@ function Pokemon() {
         ← Back to Pokedex
       </Link>
 
-      <div className="row align-items-center">
+      <div className="row justify-content-center">
         <div className="col-12 col-md-5 text-center">
           <img
             className="pokemon-image img-fluid"
@@ -32,7 +59,7 @@ function Pokemon() {
           />
         </div>
 
-        <div className="col-12 col-md-7">
+        <div className="col-12 col-md-7 d-flex flex-column justify-content-center pokemon-info">
           <h1 className="pokemon-name mb-3">
             #{pokemon.pok_id} {pokemon.pok_name}
           </h1>
@@ -66,7 +93,7 @@ function Pokemon() {
             href={`https://www.pokemon.com/us/pokedex/${pokemon.pok_name.toLowerCase()}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="btn btn-outline-primary mt-3"
+            className="btn btn-outline-primary mt-3 w-50"
           >
             Official Pokémon Page
           </a>

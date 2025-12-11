@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import "./Pokedex.css";
-import { pokemons } from "../../pokemon.json";
 import { Link } from "react-router-dom";
 import { Info } from "lucide-react";
+import { supabase } from "../../../supabaseClient";
 
 function Pokedex() {
+  const [pokemons, setPokemons] = useState([]);
+  const [filteredPokemons, setFilteredPokemons] = useState([]);
   const [region, setRegion] = useState("kanto");
   const [search, setSearch] = useState("");
   const regions = [
@@ -19,28 +21,63 @@ function Pokedex() {
     "paldea",
   ];
 
+  useEffect(() => {
+    const fetchPokemons = async () => {
+      const { data, error } = await supabase.from("pokemons").select("*");
+
+      if (error) {
+        console.error("Błąd pobierania:", error);
+      } else {
+        setPokemons(data);
+      }
+    };
+
+    fetchPokemons();
+    console.log(pokemons);
+  }, []);
+
   const changeRegion = (e) => {
     setRegion(e.target.value);
   };
 
   const typeCombination = (type1, type2, searchWord) => {
-    const combination1 = `${type1} ${type2}`.toLowerCase();
-    const combination2 = `${type2} ${type1}`.toLowerCase();
+    const t1 = (type1 || "").toLowerCase();
+    const t2 = (type2 || "").toLowerCase();
+    const combination1 = `${t1} ${t2}`;
+    const combination2 = `${t2} ${t1}`;
     return (
       combination1.includes(searchWord) || combination2.includes(searchWord)
     );
   };
+  useEffect(() => {
+    document.title = "Pokedex";
+  }, []);
+  useEffect(() => {
+    setFilteredPokemons(
+      pokemons
+        .filter((pokemon) => {
+          const regionMatch =
+            (pokemon.region || "").toLowerCase() === region.toLowerCase();
+          const nameMatch = (pokemon.pok_name || "")
+            .toLowerCase()
+            .includes(search);
+          const idMatch = String(pokemon.pok_id || "").includes(search);
+          const type1 = (pokemon.type1 || "").toLowerCase();
+          const type2 = (pokemon.type2 || "").toLowerCase();
+          const typeMatch =
+            type1.includes(search) ||
+            type2.includes(search) ||
+            typeCombination(type1, type2, search);
 
-  const filteredPokemons = pokemons.filter((pokemon) => {
-    return (
-      pokemon.region.toLowerCase() === region.toLowerCase() &&
-      (pokemon.pok_name.toLowerCase().includes(search) ||
-        pokemon.pok_id.includes(search) ||
-        pokemon.type1.includes(search) ||
-        pokemon.type2.includes(search) ||
-        typeCombination(pokemon.type1, pokemon.type2, search))
+          return regionMatch && (nameMatch || idMatch || typeMatch);
+        })
+        .sort((a, b) => {
+          const idA = parseInt(a.pok_id, 10) || 0;
+          const idB = parseInt(b.pok_id, 10) || 0;
+          return idA - idB;
+        })
     );
-  });
+  }, [region, search, pokemons]);
 
   useEffect(() => {
     const info = document.getElementById("info-icon");
@@ -87,54 +124,56 @@ function Pokedex() {
             type="text"
             className="form-control"
             placeholder="Search by name, number or type"
+            value={search}
             onChange={(e) => setSearch(e.target.value.toLowerCase())}
           />
           <span className="input-group-text" id="info-icon">
             <Info size={18} />
+            <div
+              className="position-absolute bg-white border rounded p-3 shadow-sm search-tooltip"
+              id="tooltip-box"
+            >
+              <h6 className="fw-bold">Search options</h6>
+              <div className="mb-0 ps-3 small text-start">
+                <p>1. Pokemon name</p>
+                <p>2. Pokedex number</p>
+                <p>3. Type</p>
+                <p>
+                  4. Type combination (type1 type2) <br />{" "}
+                  <strong>only space between</strong>
+                </p>
+              </div>
+            </div>
           </span>
-        </div>
-        <div
-          className="position-absolute bg-white border rounded p-3 shadow-sm"
-          style={{
-            top: "100%",
-            right: 0,
-            zIndex: 10,
-            width: "max-content",
-            display: "none",
-          }}
-          id="tooltip-box"
-        >
-          <h6 className="fw-bold">Search options</h6>
-          <div className="mb-0 ps-3 small text-start">
-            <p>1. Pokemon name</p>
-            <p>2. Pokedex number</p>
-            <p>3. Type</p>
-            <p>
-              4. Type combination (type1 type2) <br />{" "}
-              <strong>only space between</strong>
-            </p>
-          </div>
         </div>
       </div>
 
       <h2 className="region-name text-center">{region || "Pokedex"}</h2>
-      <div className="container px-3">
+      <div className="container-lg px-3">
         <div className="row justify-content-center">
           {filteredPokemons.length > 0 ? (
             filteredPokemons.map((pokemon) => (
               <div
-                className="col-6 col-sm-4 col-md-3 col-lg-2 d-flex align-items-stretch mb-4"
+                className="col-12 col-sm-6 col-md-5 col-lg-4 col-xl-3 d-flex justify-content-center mb-4"
                 key={pokemon.pok_id}
               >
-                <div className="pokemon shadow-sm rounded-4 text-center p-3">
-                  <Link to={`/pokemon/${pokemon.pok_id}`}>
+                <div className="pokemon shadow-sm rounded-4 text-center p-3 h-100">
+                  <Link
+                    to={`/pokemon/${pokemon.pok_id}`}
+                    className="text-decoration-none text-reset d-flex flex-column h-100 justify-content-between"
+                  >
                     <h4 className="id">#{pokemon.pok_id}</h4>
                     <img
                       src={pokemon.image}
                       alt={pokemon.pok_name}
                       className="img-fluid mb-2"
                     />
-                    <h2 className="h3">{pokemon.pok_name}</h2>
+                    <h4
+                      className="d-flex align-items-center justify-content-center text-capitalize p-0"
+                      style={{ minHeight: "3rem", overflow: "hidden" }}
+                    >
+                      {pokemon.pok_name}
+                    </h4>
                     <div className="type-pokemon d-flex justify-content-center gap-2">
                       <p className={`badge ${pokemon.type1}`}>
                         {pokemon.type1}
