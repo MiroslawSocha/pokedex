@@ -9,6 +9,7 @@ function Pokedex() {
   const [filteredPokemons, setFilteredPokemons] = useState([]);
   const [region, setRegion] = useState("kanto");
   const [search, setSearch] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
   const regions = [
     "kanto",
     "johto",
@@ -23,17 +24,19 @@ function Pokedex() {
 
   useEffect(() => {
     const fetchPokemons = async () => {
+      setIsLoading(true);
       const { data, error } = await supabase.from("pokemons").select("*");
 
       if (error) {
         console.error("Błąd pobierania:", error);
+        setIsLoading(false);
       } else {
         setPokemons(data);
+        setIsLoading(false);
       }
     };
 
     fetchPokemons();
-    console.log(pokemons);
   }, []);
 
   const changeRegion = (e) => {
@@ -75,7 +78,7 @@ function Pokedex() {
           const idA = parseInt(a.pok_id, 10) || 0;
           const idB = parseInt(b.pok_id, 10) || 0;
           return idA - idB;
-        })
+        }),
     );
   }, [region, search, pokemons]);
 
@@ -151,7 +154,19 @@ function Pokedex() {
       <h2 className="region-name text-center">{region || "Pokedex"}</h2>
       <div className="container-lg px-3">
         <div className="row justify-content-center">
-          {filteredPokemons.length > 0 ? (
+          {isLoading ? (
+            <div className="col-12">
+              <div className="loader-wrapper">
+                <img
+                  src="../../../pokeball-loader.gif"
+                  alt="Loading Pokémon"
+                  className="pokemon-loader"
+                  loading="lazy"
+                />
+                <p className="loader-text">Ładowanie Pokémonów...</p>
+              </div>
+            </div>
+          ) : filteredPokemons.length > 0 ? (
             filteredPokemons.map((pokemon) => (
               <div
                 className="col-12 col-sm-6 col-md-5 col-lg-4 col-xl-3 d-flex justify-content-center mb-4"
